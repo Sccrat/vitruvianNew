@@ -1,20 +1,37 @@
-import pkg from 'pg';
-const { Client } = pkg;
+// import pkg from 'pg';
+// const { Client } = pkg;
+
+import { Sequelize  } from "sequelize";
 
 
-const client = new Client({
-  connectionString: "postgres://rzpekcvppdstgl:42388371ef77390bbb835fc39de8c562b24eb1a62525e4bd82ce0b7dbc1486f9@ec2-44-194-92-192.compute-1.amazonaws.com:5432/dd1f7porsuu4tr",
-  ssl: {
-    rejectUnauthorized: false
-  }
+export const sequelize = new Sequelize('dd1f7porsuu4tr', 'rzpekcvppdstgl', '42388371ef77390bbb835fc39de8c562b24eb1a62525e4bd82ce0b7dbc1486f9', {
+  host: 'ec2-44-194-92-192.compute-1.amazonaws.com',
+  dialect: 'postgres',
+  dialectOptions: {
+        ssl: {
+            require: true,
+            rejectUnauthorized: false
+        }
+     },
 });
 
-client.connect();
+
+
+
+// const client = new Client({
+//   connectionString: "postgres://rzpekcvppdstgl:42388371ef77390bbb835fc39de8c562b24eb1a62525e4bd82ce0b7dbc1486f9@ec2-44-194-92-192.compute-1.amazonaws.com:5432/dd1f7porsuu4tr",
+//   ssl: {
+//     rejectUnauthorized: false
+//   }
+// });
+
+// client.connect();
 
 export default {
     async insertar(nombre, producto,codigo) {
-        let resultados = await client.query(`insert into caracteristicas
-        (nombre, producto,codigo)
+        console.log(nombre, producto,codigo,'vealo');
+        let resultados = await client.query(`insert into dd1f7porsuu4tr.vitruvian.caracteristicas
+        (nombre, productos,codigo)
         values
         ($1, $2, $3)`, [nombre, producto,codigo]);
         return resultados;

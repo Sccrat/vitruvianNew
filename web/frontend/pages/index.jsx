@@ -24,7 +24,7 @@ export default function HomePage() {
           <Card sectioned>
             <EmptyState
               heading="Bienvenido al creador de características especiales para productos"
-              action={{ content: 'Crear nueva característica',url: 'features/new' }}
+              action={{ content: 'Crear nueva característica', path:'/FormP'}}
               image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
             >
               <p> Mediante esta herramienta podrás crear y centralizar

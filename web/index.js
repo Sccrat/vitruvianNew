@@ -12,8 +12,24 @@ import productCreator from "./helpers/product-creator.js";
 import redirectToAuth from "./helpers/redirect-to-auth.js";
 import { BillingInterval } from "./helpers/ensure-billing.js";
 import { AppInstallations } from "./app_installations.js";
-import * as Consultas from './consultas.js'
+import {sequelize} from './database/consultas.js'
 import { Router } from "express";
+import './database/migrations.js';
+
+import { Caracteristicas } from "./database/migrations.js";
+
+
+async function main() {
+  try {
+    await sequelize.sync();
+    console.log('Connection has been established successfully.');
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
+  }
+  
+}
+
+main();
 
 const router = Router();
 
@@ -72,6 +88,7 @@ export async function createServer(
   billingSettings = BILLING_SETTINGS
 ) {
   const app = express();
+  app.use(express.json());
 
   app.set("use-online-tokens", USE_ONLINE_TOKENS);
   app.use(cookieParser(Shopify.Context.API_SECRET_KEY));
@@ -96,6 +113,58 @@ export async function createServer(
     }
   });
 
+   app.post('/api/insertar', async (req, res)=> {
+    console.log(req.body.body.nombre);
+    // return;
+    
+    // Obtener el nombre y precio. Es lo mismo que
+    // const nombre = req.body.nombre;
+    // const precio = req.body.precio;
+    const { nombre, producto, codigo } = req.body.body;
+
+    console.log('====================================');
+    console.log('si llego',nombre, producto, codigo);
+    console.log('====================================');
+    
+    if (!nombre || !producto|| !codigo) {
+        return res.status(500).send("No hay nombre , producto o código");
+    }
+    // Si todo va bien, seguimos
+    const newCategory = await Caracteristicas.create({
+      nombre,
+      producto,
+      codigo
+    });
+    console.log(newCategory);
+});
+
+app.post('/api/actualizar', async (req, res)=> {
+   
+    const { id,nombre, producto, codigo } = req.body.body;
+
+    console.log('====================================');
+    console.log('si llego',nombre, producto, codigo);
+    console.log('====================================');
+    
+    if (!nombre || !producto|| !codigo) {
+        return res.status(500).send("No hay nombre , producto o código");
+    }
+    // Si todo va bien, seguimos
+    const updateCategory = await Caracteristicas.update({ nombre, producto, codigo }, {
+      where: {
+        id: id
+      }
+    });
+    console.log(updateCategory);
+});
+
+app.get("/api", async (req, res) => {
+
+  const productos = await Caracteristicas.findAll();
+  return res.json({message:productos});
+   
+  });
+
   // All endpoints after this point will require an active session
   app.use(
     "/api/*",
@@ -104,41 +173,9 @@ export async function createServer(
     })
   );
 
-  app.get("/api", async (req, res) => {
+  
 
-    Consultas.default.obtener()
-        .then(productos => {
-            console.log(productos);
-            return res.json({message:productos});
-        })
-        .catch(err => {
-            console.log(err);
-            return res.status(500).send("Error obteniendo productos");
-        });
-  });
-
-    app.post('/api/insertar', async (req, res)=> {
-    console.log('====================================');
-    console.log('si llego');
-    console.log('====================================');
-    // Obtener el nombre y precio. Es lo mismo que
-    // const nombre = req.body.nombre;
-    // const precio = req.body.precio;
-    const { nombre, productos, codigo } = req.body;
-    if (!nombre || !productos|| !codigo) {
-        return res.status(500).send("No hay nombre o precio");
-    }
-    // Si todo va bien, seguimos
-    Consultas.default.insertar(nombre, productos, codigo)
-        .then(idProductoInsertado => {
-            console.log('====================================');
-            console.log('vamos bien',idProductoInsertado);
-            console.log('====================================');
-        })
-        .catch(err => {
-            return res.status(500).send("Error insertando producto");
-        });
-});
+   
 
   app.get("/api/products/count", async (req, res) => {
     const session = await Shopify.Utils.loadCurrentSession(
@@ -175,7 +212,7 @@ export async function createServer(
 
   // All endpoints after this point will have access to a request.body
   // attribute, as a result of the express.json() middleware
-  app.use(express.json());
+  
 
   app.use((req, res, next) => {
     const shop = Shopify.Utils.sanitizeShop(req.query.shop);

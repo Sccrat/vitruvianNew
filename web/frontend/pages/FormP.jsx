@@ -3,13 +3,13 @@ import {useState, useCallback} from 'react';
 import axios from "axios";
 
 export default function FormP() {
-  const [productos, setproduct] = useState('');
+  const [producto, setproduct] = useState('');
   const [nombre, setName] = useState('');
   const [codigo, setCode] = useState('');
 
   const handleSubmit = ()=> {
     console.log('====================================');
-    console.log(productos,nombre,codigo);
+    console.log(producto,nombre,codigo);
     console.log('====================================');
     // return;
 
@@ -20,12 +20,12 @@ export default function FormP() {
           'Access-Control-Allow-Origin':'*'
       
         },
-        body:JSON.stringify({nombre,productos,codigo})
+        body:JSON.stringify({nombre,producto,codigo})
     };
 
     axios
       .post('/api/insertar', {
-        body: {nombre,productos,codigo}
+        body: {nombre,producto,codigo}
       })
       .then((response) => {
         console.log('====================================');
@@ -56,7 +56,7 @@ export default function FormP() {
             type="text"
             />
             <TextField
-            value={productos}
+            value={producto}
             onChange={handleProductChange}
             label="Producto asignado"
             type="text"

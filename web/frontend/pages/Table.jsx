@@ -30,7 +30,7 @@ export default function Table() {
     useIndexResourceState(datos);
 
   const rowMarkup = datos.map(
-    ({id, username}, index) => (
+    ({id, nombre,producto,codigo}, index) => (
       <IndexTable.Row
         id={id}
         key={id}
@@ -40,7 +40,9 @@ export default function Table() {
         <IndexTable.Cell>
           <TextStyle variation="strong">{id}</TextStyle>
         </IndexTable.Cell>
-        <IndexTable.Cell>{username}</IndexTable.Cell>
+        <IndexTable.Cell>{nombre}</IndexTable.Cell>
+        <IndexTable.Cell>{producto}</IndexTable.Cell>
+        <IndexTable.Cell>{codigo}</IndexTable.Cell>
       </IndexTable.Row>
     ),
   );
@@ -56,7 +58,9 @@ export default function Table() {
         onSelectionChange={handleSelectionChange}
         headings={[
           {title: 'Id'},
-          {title: 'Usuario'}
+          {title: 'Nombre'},
+          {title: 'Producto'},
+          {title: 'Código'}
         ]}
       >
         {rowMarkup}
